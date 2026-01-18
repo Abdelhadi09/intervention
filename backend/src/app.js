@@ -4,12 +4,14 @@ const cors = require("cors");
 const referenceRoutes = require("./routes/reference.routes");
 const demandeRoutes = require("./routes/demande.routes");
 const itRoutes = require("./routes/it.routes");
+const authRoutes = require("./routes/auth.routes");
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/v1/auth", authRoutes);
 // Health check
 app.get("/api/v1/health", (req, res) => {
   res.json({ status: "OK", message: "API is running" });
