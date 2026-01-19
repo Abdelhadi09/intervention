@@ -1,5 +1,5 @@
 const { getConnection } = require("../config/db");
-
+const oracledb = require("oracledb");
 // Get all demandes (with optional filters)
 async function getAllDemandes({ status, structure_id }) {
   let connection;
@@ -39,6 +39,7 @@ async function getAllDemandes({ status, structure_id }) {
 
 // Update demande status
 async function updateDemandeStatus(demande_id, new_status) {
+  console.log("Updating demande", demande_id, "to status", new_status);
   let connection;
   try {
     connection = await getConnection();

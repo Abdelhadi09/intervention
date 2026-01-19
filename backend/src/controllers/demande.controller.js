@@ -5,8 +5,8 @@ const demandeService = require("../services/demande.service");
 async function createDemande(req, res) {
   try {
     const { structure_id, nature_id, description } = req.body;
-    // const created_by = req.user.user_id; // from JWT middleware
-const created_by = 1; // Hardcode first user for testing
+     const created_by = req.user.user_id; // from JWT middleware
+// const created_by = 1; // Hardcode first user for testing
 console.log("Creating demande for user_id:", created_by);
     const demande_id = await demandeService.createDemande({ created_by, structure_id, nature_id, description });
     res.status(201).json({ message: "Demande created", demande_id });
@@ -19,7 +19,7 @@ console.log("Creating demande for user_id:", created_by);
 // GET /api/v1/demandes/my
 async function getMyDemandes(req, res) {
   try {
-    const user_id = 1;
+    const user_id = req.user.user_id;
     
 
     const demandes = await demandeService.getMyDemandes(user_id);
@@ -33,7 +33,7 @@ async function getMyDemandes(req, res) {
 // GET /api/v1/demandes/:id
 async function getDemandeById(req, res) {
   try {
-    const user_id = 1;
+    const user_id = req.user.user_id;
     const demande_id = parseInt(req.params.id);
    
 
