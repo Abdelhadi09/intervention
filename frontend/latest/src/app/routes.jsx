@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 // Pages (empty for now)
 import Login from "../auth/Login";
 import NewDemande from "../user/pages/NewDemande";
+import EquipmentDemande from "../user/pages/DemandeEquipement";
 import MyDemandes from "../user/pages/MyDemandes";
 import ITDashboard from "../it/pages/ITDashboard";
  import DemandeDetails from "../user/pages/DemandeDetails";
@@ -32,6 +33,15 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/user/demandes/equipment"
+        element={
+          <ProtectedRoute role="USER">
+            <EquipmentDemande />
+          </ProtectedRoute>
+        }
+      />  
 
      
 

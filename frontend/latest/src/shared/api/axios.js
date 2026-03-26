@@ -1,7 +1,17 @@
 import axios from "axios";
 
+const baseURL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api/v1"
+    : "https://4382-129-45-31-55.ngrok-free.app/api/v1";
+
+// const baseURL =
+//   window.location.hostname === "localhost"
+//     ? "http://localhost:5000/api/v1"
+//     : "https://10.250.236.83/api/v1";
+
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL ,
   headers: {
     "Content-Type": "application/json"
   }

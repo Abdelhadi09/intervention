@@ -6,6 +6,11 @@ export async function getAllDemandes(status = "") {
   return response.data;
 }
 
+export async function getAllDemandesEquipement() {
+  const response = await api.get("/it/equipement");
+  return response.data;
+}
+
 export async function getDemandeDetails(id) {
   const response = await api.get(`/it/demandes/${id}`);
   return response.data;

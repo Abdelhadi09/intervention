@@ -1,166 +1,135 @@
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
-// import { getStructures, getNatures , getAllIntervenant } from "../../shared/services/reference.service";
-// import { createDemande } from "../services/demande.service";
+// import { getEquipementTypes, getSousTypesByType } from "../../shared/services/reference.service";
+// import { createDemandeEquipement } from "../services/demande.service";
 
-// export default function NewDemande() {
-//   const [structures, setStructures] = useState([]);
-//   const [natures, setNatures] = useState([]);
-//   const [intervenants, setIntervenants] = useState([]);
-
-//   const [structureId, setStructureId] = useState("");
-//   const [natureId, setNatureId] = useState("");
-//   const [description, setDescription] = useState("");
-
+// export default function DemandeEquipement() {
+//   const [equipementTypes, setEquipementTypes] = useState([]);
+//   const [sousTypes, setSousTypes] = useState([]);
+//   const [typeEquipement, setTypeEquipement] = useState("");
+//   const [sousType, setSousType] = useState("");
+//   const [quantite, setQuantite] = useState(1);
+//   const [observation, setObservation] = useState("");
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState("");
 
 //   const navigate = useNavigate();
 
 //   useEffect(() => {
-//     loadReferences();
+//     const loadEquipementTypes = async () => {
+//       try {
+//         const data = await getEquipementTypes();
+//         setEquipementTypes(data);
+//         console.log("Loaded equipement types:", data);
+//       } catch (err) {
+//         setError("Failed to load equipement types");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     loadEquipementTypes();
 //   }, []);
 
-//   const loadReferences = async () => {
+//   const handleTypeChange = async (event) => {
+//     const selectedType = event.target.value;
+//     setTypeEquipement(selectedType);
+//     setSousType("");
+//     setSousTypes([]);
 //     try {
-//       const [structuresData, naturesData] = await Promise.all([
-//         getStructures(),
-//         getNatures(),
-//         getAllIntervenant()
-//       ]);
-//       setStructures(structuresData);
-//       setNatures(naturesData);
-//       setIntervenants(intervenantsData);
+//       const data = await getSousTypesByType(selectedType);
+//       setSousTypes(data);
 //     } catch (err) {
-//       setError("Failed to load reference data");
-//     } finally {
-//       setLoading(false);
+//       setError("Failed to load sous-types");
 //     }
 //   };
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
 //     setError("");
 
-//     if (!structureId || !natureId || !description) {
+//     if (!typeEquipement || !sousType || quantite < 1) {
 //       setError("All fields are required");
 //       return;
 //     }
 
 //     try {
-//       await createDemande({
-//         structure_id: structureId,
-//         nature_id: natureId,
-//         description
+//       await createDemandeEquipement({
+//         type_equipement: typeEquipement,
+//         sous_type: sousType,
+//         quantite,
+//         observation,
 //       });
 
 //       navigate("/user/demandes");
 //     } catch (err) {
-//       setError("Failed to create demande");
+//       setError("Failed to create demande d'equipement");
 //     }
 //   };
 
 //   if (loading) return <p>Loading...</p>;
 
 //   return (
-//     <div style={styles.container}>
-//       <h2>New Demande</h2>
-
-//       {error && <p style={styles.error}>{error}</p>}
-// <div style={styles.card}>
-      
-//       <form onSubmit={handleSubmit} style={styles.form}>
-//         <div style={styles.field}>
-//         <label>
-//           Structure
-//           <select value={structureId} onChange={(e) => setStructureId(e.target.value)}>
-//             <option value="">-- Select Structure --</option>
-//             {structures.map((s) => (
-//               <option key={s.STRUCTURE_ID} value={s.STRUCTURE_ID}>
-//                 {s.STRUCTURE_NAME}
+//     <div>
+//       <h2>New Demande d'Equipement</h2>
+//       {error && <p style={{ color: "red" }}>{error}</p>}
+//       <form onSubmit={handleSubmit}>
+//         <div>
+//           <label>Type d'Equipement:</label>
+//           <select value={typeEquipement} onChange={handleTypeChange}>
+//             <option value="">-- Select Type --</option>
+//             {equipementTypes.map((type) => (
+//               <option key={type.TYPE_ID} value={type.TYPE_ID}>
+//                 {type.LIBELLE}
 //               </option>
 //             ))}
 //           </select>
-//         </label>
-// </div>
-// <div style={styles.field}>
-//         <label>
-//           Nature
-//           <select value={natureId} onChange={(e) => setNatureId(e.target.value)}>
-//             <option value="">-- Select Nature --</option>
-//             {natures.map((n) => (
-//               <option key={n.NATURE_ID} value={n.NATURE_ID}>
-//                 {n.NATURE_NAME}
-//               </option>
-//             ))}
-//           </select>
-//         </label>
 //         </div>
-//         <div style={styles.field}>
-//         <label>
-//           Description
-//           <textarea
-//             rows="4"
-//             value={description}
-//             onChange={(e) => setDescription(e.target.value)}
+//         <div>
+//           <label>Sous-Type:</label>
+//           <select
+//             value={sousType}
+//             onChange={(event) => setSousType(event.target.value)}
+//             disabled={!sousTypes.length}
+//           >
+//             <option value="">Select sous-type</option>
+//             {sousTypes.map((st) => (
+//               <option key={st.ID} value={st.ID}>
+//                 {st.LIBELLE}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+//         <div>
+//           <label>Quantité:</label>
+//           <input
+//             type="number"
+//             value={quantite}
+//             onChange={(event) => setQuantite(Number(event.target.value))}
+//             min="1"
 //           />
-//         </label>
 //         </div>
-//         <button style={styles.submitBtn}
-//          type="submit">Submit Demande</button>
+//         <div>
+//           <label>Observation:</label>
+//           <textarea
+//             value={observation}
+//             onChange={(event) => setObservation(event.target.value)}
+//           />
+//         </div>
+//         <button type="submit">Create Demande</button>
 //       </form>
-//       </div>
 //     </div>
 //   );
 // }
-// const styles = {
-//    container: {
-//     padding: "30px",
-//     background: "#f4f6f8",
-//     minHeight: "100vh"
-//   },
-//   card: {
-    
-//     background: "#fff",
-//     padding: "25px",
-//     maxWidth: "600px",
-//     borderRadius: "8px",
-//     boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
-//   },
-//   // form: {
-//   //   display: "flex",
-//   //   flexDirection: "column",
-//   //   gap: "10px"
-//   // },
-//     field: {
-//     display: "flex",
-//     flexDirection: "column",
-//     marginBottom: "15px"
-//   },
-//   error: {
-//     color: "#d32f2f",
-//     marginBottom: "10px"
-//   },
-//   submitBtn: {
-//     marginTop: "10px",
-//     width: "100%",
-//     padding: "10px",
-//     background: "#1976d2",
-//     color: "#fff",
-//     border: "none",
-//     borderRadius: "4px",
-//     cursor: "pointer",
-//     fontWeight: "600"
-//   }
-// };
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getStructures, getNatures, getAllIntervenant } from "../../shared/services/reference.service";
-import { createDemande } from "../services/demande.service";
+import { getEquipementTypes, getSousTypesByType } from "../../shared/services/reference.service";
+import { createDemandeEquipement } from "../services/demande.service";
 
 // ── Sidebar ────────────────────────────────────────────────────────────────────
 const NEW_REQUEST_ITEMS = [
+
   { label: "Intervention", icon: "build",       path: "/user/demandes/new" },
   { label: "Réparation",   icon: "handyman",    path: "/user/demandes/new/reparation"   },
   { label: "Équipement",   icon: "devices",     path: "/user/demandes/equipment"    },
@@ -168,12 +137,11 @@ const NEW_REQUEST_ITEMS = [
 
 function Sidebar() {
   const navigate = useNavigate();
-  const [newRequestOpen, setNewRequestOpen] = useState(true); // open by default on this page
+  const [newRequestOpen, setNewRequestOpen] = useState(true);
 
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 bg-slate-100 p-4 overflow-y-auto font-['Inter'] tracking-tight shrink-0">
-      {/* Brand */}
-       <div className="flex items-center gap-3 px-2 mb-10">
+      <div className="flex items-center gap-3 px-2 mb-10">
         <div className="  w-10 h-10 rounded-full bg-[#e6e8ea] flex items-center justify-center">
             <img src="../src/assets/logoencc.png" alt="Logo" className="w-16 h-10" />
         </div>
@@ -184,19 +152,16 @@ function Sidebar() {
           
         </div>
       </div>
-
       <nav className="space-y-1">
-       
-        <a
-          href="#"
-          onClick={(e) => { e.preventDefault(); navigate("/user/demandes"); }}
-          className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 transition-colors duration-200 rounded-xl active:scale-[0.98]"
+        
+        <button
+          onClick={() => navigate("/user/demandes")}
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 transition-colors duration-200 rounded-xl active:scale-[0.98]"
         >
           <span className="material-symbols-outlined text-xl">list_alt</span>
           <span className="text-sm font-medium">My Requests</span>
-        </a>
+        </button>
 
-        {/* New Request accordion — active */}
         <div>
           <button
             onClick={() => setNewRequestOpen((o) => !o)}
@@ -218,12 +183,16 @@ function Sidebar() {
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:text-[#005dac] transition-colors duration-150 rounded-lg active:scale-[0.98] group"
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors duration-150 rounded-lg active:scale-[0.98] group text-sm font-medium
+                    ${item.path.includes("equipment")
+                      ? "bg-[#005dac]/10 text-[#005dac]"
+                      : "text-slate-500 hover:bg-slate-200 hover:text-[#005dac]"
+                    }`}
                 >
-                  <span className="material-symbols-outlined text-lg group-hover:text-[#005dac] transition-colors">
+                  <span className={`material-symbols-outlined text-lg transition-colors ${item.path.includes("equipment") ? "text-[#005dac]" : "group-hover:text-[#005dac]"}`}>
                     {item.icon}
                   </span>
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <span>{item.label}</span>
                 </button>
               ))}
             </div>
@@ -231,7 +200,6 @@ function Sidebar() {
         </div>
       </nav>
 
-      {/* User card */}
       <div className="mt-auto pt-8">
         <div className="bg-slate-200/50 rounded-2xl p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#e6e8ea] flex items-center justify-center text-xs font-bold text-[#005dac]">
@@ -253,9 +221,7 @@ function TopBar() {
     <header className="flex justify-between items-center h-16 px-8 w-full sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm z-40">
       <div className="flex items-center gap-6 flex-1">
         <div className="relative w-full max-w-md">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
-            search
-          </span>
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
           <input
             className="w-full bg-[#f2f4f6] border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-400"
             placeholder="Search requests, assets, or documentation..."
@@ -276,16 +242,42 @@ function TopBar() {
   );
 }
 
+// ── Select Field ───────────────────────────────────────────────────────────────
+function SelectField({ id, label, icon, value, onChange, disabled, children }) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="block text-xs font-bold uppercase tracking-widest text-[#414752]">
+        {label}
+      </label>
+      <div className="relative">
+        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717783] text-lg pointer-events-none">
+          {icon}
+        </span>
+        <select
+          id={id}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          className="w-full pl-10 pr-10 py-3 bg-[#f2f4f6] border-0 rounded-lg text-[#191c1e] text-sm font-medium focus:ring-1 focus:ring-[#005dac] focus:bg-white transition-all outline-none cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {children}
+        </select>
+        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#717783] text-base pointer-events-none">
+          expand_more
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
-export default function NewDemande() {
-  const [structures, setStructures] = useState([]);
-  const [natures, setNatures] = useState([]);
-  const [intervenants, setIntervenants] = useState([]);
-
-  const [structureId, setStructureId] = useState("");
-  const [natureId, setNatureId] = useState("");
-  const [description, setDescription] = useState("");
-
+export default function DemandeEquipement() {
+  const [equipementTypes, setEquipementTypes] = useState([]);
+  const [sousTypes, setSousTypes] = useState([]);
+  const [typeEquipement, setTypeEquipement] = useState("");
+  const [sousType, setSousType] = useState("");
+  const [quantite, setQuantite] = useState(1);
+  const [observation, setObservation] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -293,23 +285,23 @@ export default function NewDemande() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadReferences();
+    getEquipementTypes()
+      .then(setEquipementTypes)
+      .catch(() => setError("Failed to load equipment types"))
+      .finally(() => setLoading(false));
   }, []);
 
-  const loadReferences = async () => {
+  const handleTypeChange = async (e) => {
+    const selectedType = e.target.value;
+    setTypeEquipement(selectedType);
+    setSousType("");
+    setSousTypes([]);
+    if (!selectedType) return;
     try {
-      const [structuresData, naturesData, intervenantsData] = await Promise.all([
-        getStructures(),
-        getNatures(),
-        getAllIntervenant(),
-      ]);
-      setStructures(structuresData);
-      setNatures(naturesData);
-      setIntervenants(intervenantsData);
+      const data = await getSousTypesByType(selectedType);
+      setSousTypes(data);
     } catch {
-      setError("Failed to load reference data");
-    } finally {
-      setLoading(false);
+      setError("Failed to load sous-types");
     }
   };
 
@@ -317,17 +309,17 @@ export default function NewDemande() {
     e.preventDefault();
     setError("");
 
-    if (!structureId || !natureId || !description) {
+    if (!typeEquipement  || quantite < 1) {
       setError("All fields are required");
       return;
     }
 
     setSubmitting(true);
     try {
-      await createDemande({ structure_id: structureId, nature_id: natureId, description });
+      await createDemandeEquipement({ type_equipement: typeEquipement, sous_type: sousType, quantite, observation });
       navigate("/user/demandes");
     } catch {
-      setError("Failed to create demande");
+      setError("Failed to create demande d'équipement");
     } finally {
       setSubmitting(false);
     }
@@ -342,7 +334,7 @@ export default function NewDemande() {
 
         <div className="flex-1 overflow-y-auto p-8">
 
-          {/* Page Header */}
+          {/* Page header */}
           <div className="mb-8">
             <button
               onClick={() => navigate("/user/demandes")}
@@ -351,8 +343,17 @@ export default function NewDemande() {
               <span className="material-symbols-outlined text-base">arrow_back</span>
               Back to My Requests
             </button>
-            <h2 className="text-3xl font-extrabold tracking-tight text-[#191c1e]">New Demande</h2>
-            <p className="text-[#414752] mt-1">Fill in the details below to submit a new IT request.</p>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-9 h-9 rounded-lg bg-[#005dac]/10 flex items-center justify-center text-[#005dac]">
+                <span className="material-symbols-outlined text-xl">devices</span>
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-[#191c1e]">
+                New Equipment Request
+              </h2>
+            </div>
+            <p className="text-[#414752] mt-1 ml-12">
+              Specify the type, sub-type, quantity, and any observations.
+            </p>
           </div>
 
           {/* Loading */}
@@ -368,7 +369,7 @@ export default function NewDemande() {
 
           {!loading && (
             <div className="max-w-2xl">
-              {/* Error banner */}
+              {/* Error */}
               {error && (
                 <div className="mb-6 px-4 py-3 rounded-lg bg-[#ffdad6] text-[#93000a] text-sm font-medium flex items-center gap-2">
                   <span className="material-symbols-outlined text-base">error</span>
@@ -379,35 +380,48 @@ export default function NewDemande() {
               {/* Form card */}
               <div className="bg-white rounded-xl shadow-[0_20px_40px_rgba(25,28,30,0.06)] overflow-hidden">
                 <div className="px-6 py-5 border-b border-[#eceef0] bg-[#f2f4f6]/30">
-                  <h3 className="text-base font-bold tracking-tight text-[#191c1e]">Request Information</h3>
-                  <p className="text-xs text-[#414752] mt-0.5">All fields are required</p>
+                  <h3 className="text-base font-bold tracking-tight text-[#191c1e]">Equipment Details</h3>
+                  <p className="text-xs text-[#414752] mt-0.5">Type, sub-type and quantity are required</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="px-6 py-6 space-y-6">
 
-                  {/* Structure */}
+                  {/* Type d'équipement */}
+                  <SelectField
+                    id="type"
+                    label="Type d'Équipement"
+                    icon="category"
+                    value={typeEquipement}
+                    onChange={handleTypeChange}
+                  >
+                    <option value="">— Select Type —</option>
+                    {equipementTypes.map((t) => (
+                      <option key={t.TYPE_ID} value={t.TYPE_ID}>{t.LIBELLE}</option>
+                    ))}
+                  </SelectField>
+
+                  {/* Sous-type */}
                   <div className="space-y-2">
-                    <label
-                      htmlFor="structure"
-                      className="block text-xs font-bold uppercase tracking-widest text-[#414752]"
-                    >
-                      Structure
+                    <label htmlFor="soustype" className="block text-xs font-bold uppercase tracking-widest text-[#414752]">
+                      Sous-Type
+                      {!typeEquipement && (
+                        <span className="ml-2 normal-case font-normal text-[#717783]">— select a type first</span>
+                      )}
                     </label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717783] text-lg pointer-events-none">
-                        business
+                        tune
                       </span>
                       <select
-                        id="structure"
-                        value={structureId}
-                        onChange={(e) => setStructureId(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-[#f2f4f6] border-0 rounded-lg text-[#191c1e] text-sm font-medium focus:ring-1 focus:ring-[#005dac] focus:bg-white transition-all outline-none cursor-pointer appearance-none"
+                        id="soustype"
+                        value={sousType}
+                        onChange={(e) => setSousType(e.target.value)}
+                        disabled={!sousTypes.length}
+                        className="w-full pl-10 pr-10 py-3 bg-[#f2f4f6] border-0 rounded-lg text-[#191c1e] text-sm font-medium focus:ring-1 focus:ring-[#005dac] focus:bg-white transition-all outline-none cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <option value="">— Select Structure —</option>
-                        {structures.map((s) => (
-                          <option key={s.STRUCTURE_ID} value={s.STRUCTURE_ID}>
-                            {s.STRUCTURE_NAME}
-                          </option>
+                        <option value="">— Select Sous-Type —</option>
+                        {sousTypes.map((st) => (
+                          <option key={st.ID} value={st.ID}>{st.LIBELLE}</option>
                         ))}
                       </select>
                       <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#717783] text-base pointer-events-none">
@@ -416,51 +430,38 @@ export default function NewDemande() {
                     </div>
                   </div>
 
-                  {/* Nature */}
+                  {/* Quantité */}
                   <div className="space-y-2">
-                    <label
-                      htmlFor="nature"
-                      className="block text-xs font-bold uppercase tracking-widest text-[#414752]"
-                    >
-                      Nature
+                    <label htmlFor="quantite" className="block text-xs font-bold uppercase tracking-widest text-[#414752]">
+                      Quantité
                     </label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717783] text-lg pointer-events-none">
-                        category
+                        pin
                       </span>
-                      <select
-                        id="nature"
-                        value={natureId}
-                        onChange={(e) => setNatureId(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-[#f2f4f6] border-0 rounded-lg text-[#191c1e] text-sm font-medium focus:ring-1 focus:ring-[#005dac] focus:bg-white transition-all outline-none cursor-pointer appearance-none"
-                      >
-                        <option value="">— Select Nature —</option>
-                        {natures.map((n) => (
-                          <option key={n.NATURE_ID} value={n.NATURE_ID}>
-                            {n.NATURE_NAME}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#717783] text-base pointer-events-none">
-                        expand_more
-                      </span>
+                      <input
+                        id="quantite"
+                        type="number"
+                        min="1"
+                        value={quantite}
+                        onChange={(e) => setQuantite(Number(e.target.value))}
+                        className="w-full pl-10 pr-4 py-3 bg-[#f2f4f6] border-0 rounded-lg text-[#191c1e] text-sm font-medium focus:ring-1 focus:ring-[#005dac] focus:bg-white transition-all outline-none"
+                      />
                     </div>
                   </div>
 
-                  {/* Description */}
+                  {/* Observation */}
                   <div className="space-y-2">
-                    <label
-                      htmlFor="description"
-                      className="block text-xs font-bold uppercase tracking-widest text-[#414752]"
-                    >
-                      Description
+                    <label htmlFor="observation" className="block text-xs font-bold uppercase tracking-widest text-[#414752]">
+                      Observation
+                      <span className="ml-2 normal-case font-normal text-[#717783]">— optional</span>
                     </label>
                     <textarea
-                      id="description"
+                      id="observation"
                       rows={4}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Describe the issue or request in detail…"
+                      value={observation}
+                      onChange={(e) => setObservation(e.target.value)}
+                      placeholder="Add any additional notes or context…"
                       className="w-full px-4 py-3 bg-[#f2f4f6] border-0 rounded-lg text-[#191c1e] text-sm placeholder:text-[#717783] focus:ring-1 focus:ring-[#005dac] focus:bg-white transition-all outline-none resize-none"
                     />
                   </div>
@@ -484,7 +485,7 @@ export default function NewDemande() {
                       ) : (
                         <>
                           <span className="material-symbols-outlined text-sm">send</span>
-                          Submit Demande
+                          Create Demande
                         </>
                       )}
                     </button>
