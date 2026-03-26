@@ -6,7 +6,10 @@ const authMiddleware = require("../middlewares/auth.middleware");
 // router.use(authMiddleware);
 
 router.post("/",authMiddleware, demandeController.createDemande);
+router.post("/equipement",authMiddleware, demandeController.createDemandeEquipement);
+router.get("/myequipement",authMiddleware, demandeController.getmyDemandesEquipements);
 router.get("/my",authMiddleware, demandeController.getMyDemandes);
 router.get("/:id",authMiddleware, demandeController.getDemandeById);
-
+router.put("/intervention/:id/close", authMiddleware, demandeController.closeIntervention);
+router.put("/:id/remarque", authMiddleware, demandeController.addRemarque);
 module.exports = router;

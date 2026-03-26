@@ -2,6 +2,7 @@ const { getConnection } = require("../config/db");
 const bcrypt = require("bcryptjs");
 
 async function login(username, password) {
+  console.log("Attempting login for user:", username);
   let connection;
   try {
     connection = await getConnection();

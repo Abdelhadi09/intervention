@@ -47,7 +47,7 @@ async function updateDemandeStatus(req, res) {
 async function createIntervention(req, res) {
   try {
     const { demande_id, intervenant_id, travaux_effectues, date_intervention } = req.body;
-
+console.log("Creating intervention for demande", demande_id , "with intervenant", intervenant_id , "and travaux", travaux_effectues , "on date", date_intervention);
     const intervention_id = await interventionService.createIntervention({
       demande_id,
       intervenant_id,
@@ -59,6 +59,20 @@ async function createIntervention(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to create intervention" });
+  }
+}
+
+// post assign demande to intervenant
+async function assignDemandeToIntervenant(req, res) {
+  try {
+    const { demande_id, intervenant } = req.body;
+console.log("controller Assigning demande", demande_id , "to intervenant", intervenant);
+    await interventionService.assignDemandeToIntervenant(demande_id, intervenant);
+
+    res.status(200).json({ message: "Demande assigned to intervenant" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to assign demande to intervenant" });
   }
 }
 
@@ -76,17 +90,16 @@ async function updateIntervention(req, res) {
   }
 }
 
-// POST /api/v1/it/interventions/:id/close
-async function closeIntervention(req, res) {
+
+
+// GET /api/v1/it/equipement
+async function getAllEquipementDemandes(req, res) {
   try {
-    const intervention_id = parseInt(req.params.id);
-
-    const demande_id = await interventionService.closeIntervention(intervention_id);
-
-    res.status(200).json({ message: "Intervention closed", demande_id });
+    const demandes = await itDemandeService.getAllEquipementDemandes();
+    res.status(200).json(demandes);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to close intervention" });
+    res.status(500).json({ message: "Failed to fetch equipement demandes" });
   }
 }
 
@@ -96,5 +109,6 @@ module.exports = {
   updateDemandeStatus,
   createIntervention,
   updateIntervention,
-  closeIntervention
+  assignDemandeToIntervenant,
+  getAllEquipementDemandes
 };

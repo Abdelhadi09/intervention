@@ -66,9 +66,9 @@ async function getDemandeDetails(demande_id) {
     connection = await getConnection();
 
     const result = await connection.execute(
-      `SELECT d.demande_id, d.description, d.status, d.created_at,
+      `SELECT d.demande_id, d.description, d.status, d.created_at,d.remarque, d.intervenant,
               u.full_name AS created_by, s.structure_name, n.nature_name,
-              i.intervention_id, i.intervenant_id, i.travaux_effectues, i.date_intervention, i.closed_at
+              i.intervention_id, i.travaux_effectues, i.date_intervention, i.closed_at
        FROM demandes d
        JOIN users u ON d.created_by = u.user_id
        JOIN structures s ON d.structure_id = s.structure_id
@@ -84,8 +84,29 @@ async function getDemandeDetails(demande_id) {
   }
 }
 
+// get all equipement demandes
+async function getAllEquipementDemandes() {
+  let connection;
+  try {
+    connection = await getConnection();
+
+    const result = await connection.execute(
+      `SELECT ed.demande_id, ed.type_equipement, ed.sous_type, ed.quantite, ed.observation, ed.created_by,
+              u.username AS created_by
+       FROM equipement_demande ed
+       JOIN users u ON ed.created_by = u.user_id
+       ORDER BY ed.created_by DESC`
+    );
+
+    return result.rows;
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
 module.exports = {
   getAllDemandes,
   updateDemandeStatus,
-  getDemandeDetails
+  getDemandeDetails,
+  getAllEquipementDemandes
 };

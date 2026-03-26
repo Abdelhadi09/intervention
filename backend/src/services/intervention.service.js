@@ -1,5 +1,5 @@
 const { getConnection } = require("../config/db");
-
+const oracledb = require("oracledb");
 // Create intervention
 async function createIntervention({ demande_id, intervenant_id, travaux_effectues, date_intervention }) {
   let connection;
@@ -20,6 +20,26 @@ async function createIntervention({ demande_id, intervenant_id, travaux_effectue
     );
 
     return result.outBinds.id[0];
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+//asign demande to intervenant 
+
+async function assignDemandeToIntervenant(demande_id, intervenant) {
+  let connection;
+  try {
+    connection = await getConnection();
+
+    await connection.execute(
+      `UPDATE demandes
+       SET intervenant = :intervenant, updated_at = SYSDATE
+       WHERE demande_id = :demande_id`,
+      { demande_id, intervenant }
+      
+    );
+    console.log("Assigned demande", demande_id, "to intervenant", intervenant );
   } finally {
     if (connection) await connection.close();
   }
@@ -51,44 +71,10 @@ async function updateIntervention(intervention_id, data) {
   }
 }
 
-// Close intervention (and demande)
-async function closeIntervention(intervention_id) {
-  let connection;
-  try {
-    connection = await getConnection();
 
-    // Update intervention
-    await connection.execute(
-      `UPDATE interventions
-       SET closed_at = SYSDATE
-       WHERE intervention_id = :intervention_id`,
-      { intervention_id }
-    );
-
-    // Get the demande_id
-    const result = await connection.execute(
-      `SELECT demande_id FROM interventions WHERE intervention_id = :intervention_id`,
-      { intervention_id }
-    );
-
-    const demande_id = result.rows[0].DEMANDE_ID;
-
-    // Update demande status to COMPLETED
-    await connection.execute(
-      `UPDATE demandes
-       SET status = 'COMPLETED', updated_at = SYSDATE
-       WHERE demande_id = :demande_id`,
-      { demande_id }
-    );
-
-    return demande_id;
-  } finally {
-    if (connection) await connection.close();
-  }
-}
 
 module.exports = {
   createIntervention,
   updateIntervention,
-  closeIntervention
+  assignDemandeToIntervenant,
 };

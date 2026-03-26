@@ -11,12 +11,13 @@ router.use(authorizeRoles("IT_ADMIN"));
 
 // Demandes
 router.get("/demandes", itController.getAllDemandes);
+router.get("/equipement", itController.getAllEquipementDemandes);
 router.get("/demandes/:id", itController.getDemandeDetails);
 router.patch("/demandes/:id/status", itController.updateDemandeStatus);
 
 // Interventions
-router.post("/interventions", itController.createIntervention);
+router.post("/interventions", itController.assignDemandeToIntervenant);
 router.put("/interventions/:id", itController.updateIntervention);
-router.post("/interventions/:id/close", itController.closeIntervention);
+
 
 module.exports = router;
