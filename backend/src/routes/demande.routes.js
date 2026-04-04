@@ -12,4 +12,5 @@ router.get("/my",authMiddleware, demandeController.getMyDemandes);
 router.get("/:id",authMiddleware, demandeController.getDemandeById);
 router.put("/intervention/:id/close", authMiddleware, demandeController.closeIntervention);
 router.put("/:id/remarque", authMiddleware, demandeController.addRemarque);
+
 module.exports = router;
