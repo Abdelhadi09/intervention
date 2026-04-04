@@ -365,6 +365,16 @@ function EquipementDrawer({ demande, onClose }) {
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 function Sidebar() {
+const NEW_REQUEST_ITEMS = [
+  
+  { label: "Réparation",    icon: "handyman",     path: "/it/demandes/reparation"   },
+ 
+];
+const [newRequestOpen, setNewRequestOpen] = useState(false);
+const navigate = useNavigate();
+
+     const userString = localStorage.getItem("user");
+const user = userString ? JSON.parse(userString) : { username: "Guest", role: "No role" };
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 bg-slate-100 font-['Inter'] tracking-tight p-4 shrink-0 overflow-y-auto">
       <div className="flex items-center gap-3 px-2 mb-10">
@@ -380,12 +390,46 @@ function Sidebar() {
           <span className="material-symbols-outlined">dashboard</span>
           <span>Dashboard</span>
         </a>
+         {/* New Request accordion */}
+        <div>
+          <button
+            onClick={() => setNewRequestOpen((o) => !o)}
+            className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 transition-colors duration-200 rounded-xl active:scale-[0.98]"
+          >
+            <span className="material-symbols-outlined text-xl">add_circle</span>
+            <span className="text-sm font-medium flex-1 text-left">New Request</span>
+            <span
+              className="material-symbols-outlined text-base transition-transform duration-200"
+              style={{ transform: newRequestOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            >
+              expand_more
+            </span>
+          </button>
+
+          {/* Dropdown items */}
+          {newRequestOpen && (
+            <div className="mt-1 ml-4 pl-3 border-l-2 border-[#005dac]/20 space-y-0.5">
+              {NEW_REQUEST_ITEMS.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:text-[#005dac] transition-colors duration-150 rounded-lg active:scale-[0.98] group"
+                >
+                  <span className="material-symbols-outlined text-lg group-hover:text-[#005dac] transition-colors">
+                    {item.icon}
+                  </span>
+                  <span className="text-sm font-medium">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </nav>
       <div className="mt-auto p-2 bg-[#f2f4f6] rounded-xl flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-[#e6e8ea] flex items-center justify-center text-xs font-bold text-[#005dac]">IT</div>
         <div className="overflow-hidden">
-          <p className="text-sm font-bold truncate">IT Admin</p>
-          <p className="text-xs text-[#414752] truncate">System Administrator</p>
+          <p className="text-sm font-bold truncate">{user.username.toUpperCase()}</p>
+          <p className="text-xs text-[#414752] truncate">{user.role}</p>
         </div>
       </div>
     </aside>
@@ -394,6 +438,14 @@ function Sidebar() {
 
 // ── Top Header ─────────────────────────────────────────────────────────────────
 function TopBar({ statusFilter, onFilterChange }) {
+    const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("auth");
+    navigate("/login");
+  };
   return (
     <header className="flex justify-between items-center h-16 px-8 w-full sticky top-0 bg-white/80 backdrop-blur-xl z-40 border-b border-slate-100 shadow-sm text-sm font-medium">
       <div className="flex items-center gap-4 flex-1">
@@ -421,7 +473,9 @@ function TopBar({ statusFilter, onFilterChange }) {
       </div>
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-4 border-r border-[#c1c6d4] pr-6">
-          <button className="text-slate-600 hover:text-blue-600 transition-colors">
+          <button 
+          onClick={handleLogout}
+          className="text-slate-600 hover:text-blue-600 transition-colors">
             <span className="material-symbols-outlined">logout</span>
           </button>
         </div>

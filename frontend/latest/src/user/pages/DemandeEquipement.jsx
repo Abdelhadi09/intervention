@@ -131,7 +131,6 @@ import { createDemandeEquipement } from "../services/demande.service";
 const NEW_REQUEST_ITEMS = [
 
   { label: "Intervention", icon: "build",       path: "/user/demandes/new" },
-  { label: "Réparation",   icon: "handyman",    path: "/user/demandes/new/reparation"   },
   { label: "Équipement",   icon: "devices",     path: "/user/demandes/equipment"    },
 ];
 

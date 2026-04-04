@@ -7,8 +7,7 @@ import NewDemande from "../user/pages/NewDemande";
 import EquipmentDemande from "../user/pages/DemandeEquipement";
 import MyDemandes from "../user/pages/MyDemandes";
 import ITDashboard from "../it/pages/ITDashboard";
- import DemandeDetails from "../user/pages/DemandeDetails";
- import ITDemandeDetails from "../it/pages/DemandeDetailsIT";
+import DemandeReception from "../it/pages/DemandeReparation";
 
 export default function AppRoutes() {
   return (
@@ -45,14 +44,7 @@ export default function AppRoutes() {
 
      
 
-<Route
-  path="/user/demandes/:id"
-  element={
-    <ProtectedRoute role="USER">
-      <DemandeDetails />
-    </ProtectedRoute>
-  }
-/>
+
 
 
       {/* IT */}
@@ -66,13 +58,15 @@ export default function AppRoutes() {
       />
 
       <Route
-  path="/it/demandes/:id"
-  element={
-    <ProtectedRoute role="IT_ADMIN">
-      <ITDemandeDetails />
-    </ProtectedRoute>
-  }
-/>
+        path="/it/demandes/reparation"
+        element={
+          <ProtectedRoute role="IT_ADMIN">
+            <DemandeReception />
+          </ProtectedRoute>
+        }
+      />
+
+     
     </Routes>
 
     

@@ -4,6 +4,7 @@ import { getMyDemandes, getDemandeById , closeDemande ,addRemarque} from "../ser
 import { getDemandeDetails } from "../../it/services/itDemande.service";
 import { useNavigate } from "react-router-dom";
 console.log("user token is" + localStorage.getItem("token"));
+
 // ── Status badge config ────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
   CREATED: {
@@ -290,7 +291,6 @@ function DemandeDrawer({ demandeId, onClose }) {
 // ── Sidebar ────────────────────────────────────────────────────────────────────
 const NEW_REQUEST_ITEMS = [
   { label: "Intervention",  icon: "build",        path: "/user/demandes/new" },
-  { label: "Réparation",    icon: "handyman",     path: "/user/demandes/new/reparation"   },
   { label: "Équipement",    icon: "devices",      path: "/user/demandes/equipment"    },
 ];
 
@@ -298,6 +298,8 @@ function Sidebar() {
   const navigate = useNavigate();
   const [newRequestOpen, setNewRequestOpen] = useState(false);
 
+   const userString = localStorage.getItem("user");
+const user = userString ? JSON.parse(userString) : { username: "Guest", role: "No role" };
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 bg-slate-100 p-4 overflow-y-auto font-['Inter'] tracking-tight shrink-0">
       {/* Brand */}
@@ -363,13 +365,13 @@ function Sidebar() {
       {/* User card */}
       <div className="mt-auto pt-8">
         <div className="bg-slate-200/50 rounded-2xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#e6e8ea] flex items-center justify-center text-xs font-bold text-[#005dac]">
-            ME
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-slate-900 truncate">My Account</p>
-            <p className="text-xs text-slate-500 truncate">Standard User</p>
-          </div>
+          <div className="w-10 h-10 rounded-lg bg-[#e6e8ea] flex items-center justify-center text-xs font-bold text-[#005dac]">ME</div>
+      
+
+<div className="flex-1 min-w-0">
+  <p className="text-sm font-bold text-slate-900 truncate">{user.username.toUpperCase()}</p>
+  <p className="text-xs text-slate-500 truncate">{user.role}</p>
+</div>
         </div>
       </div>
     </aside>
@@ -378,6 +380,14 @@ function Sidebar() {
 
 // ── Top Bar ────────────────────────────────────────────────────────────────────
 function TopBar() {
+   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("auth");
+    navigate("/login");
+  };
   return (
     <header className="flex justify-between items-center h-16 px-8 w-full sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm z-40">
       <div className="flex items-center gap-6 flex-1">
@@ -397,7 +407,9 @@ function TopBar() {
           <span className="material-symbols-outlined">notifications</span>
         </button>
         <div className="h-6 w-px bg-slate-200 mx-1" />
-        <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 hover:text-blue-600 transition-colors">
+        <button 
+        onClick={handleLogout}
+        className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 hover:text-blue-600 transition-colors">
           <span className="material-symbols-outlined">logout</span>
         </button>
       </div>
