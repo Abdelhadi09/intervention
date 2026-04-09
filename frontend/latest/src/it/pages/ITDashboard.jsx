@@ -413,7 +413,8 @@ const user = userString ? JSON.parse(userString) : { username: "Guest", role: "N
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:text-[#005dac] transition-colors duration-150 rounded-lg active:scale-[0.98] group"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-200 hover:text-[#005dac] transition-colors duration-150 rounded-lg active:scale-[0.98] group transition-all duration-200 active:scale-[0.98]
+  hover:shadow-md"
                 >
                   <span className="material-symbols-outlined text-lg group-hover:text-[#005dac] transition-colors">
                     {item.icon}
